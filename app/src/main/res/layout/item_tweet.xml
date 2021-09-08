@@ -44,5 +44,16 @@
             android:layout_toEndOf="@+id/ivProfileImage"
             android:text="@{tweet.body}"
             tools:text="This is my sample text." />
+
+        <TextView
+            android:id="@+id/tvFormattedTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="11dp"
+            android:layout_marginTop="0dp"
+            android:layout_toEndOf="@+id/tvScreenName"
+            android:text="@{tweet.formattedTimeDifference}"
+            tools:text="2 mins ago" />
     </RelativeLayout>
 </layout>
