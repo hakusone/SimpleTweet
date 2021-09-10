@@ -1,20 +1,25 @@
 package com.codepath.apps.simpletweet;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.apps.simpletweet.databinding.ItemTweetBinding;
 import com.codepath.apps.simpletweet.models.Tweet;
 
+import org.parceler.Parcels;
+
 import java.util.List;
 
-public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder> {
+public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final String TAG = "TweetsAdapter";
 
     Context context;
@@ -27,9 +32,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.d(TAG, "onCreateViewHolder");
-        ViewHolder viewHolder;
+        RecyclerView.ViewHolder viewHolder;
         LayoutInflater inflater = LayoutInflater.from(context);
 
         ItemTweetBinding binding =
@@ -40,11 +45,19 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Tweet tweet = tweets.get(position);
 
-        holder.binding.setTweet(tweet);
-        holder.binding.executePendingBindings();
+        ViewHolder vh = (ViewHolder) holder;
+
+        vh.binding.setTweet(tweet);
+
+        vh.binding.ibRetweet.setSelected(tweet.retweeted);
+        vh.binding.tvRetweet.setSelected(tweet.retweeted);
+        vh.binding.ibFavorite.setSelected(tweet.favorited);
+        vh.binding.tvFavorite.setSelected(tweet.favorited);
+
+        vh.binding.executePendingBindings();
     }
 
     @Override
@@ -63,13 +76,27 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final ItemTweetBinding binding;
 
         public ViewHolder(ItemTweetBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-//            itemView.setOnClickListener(this);
+            this.binding.getRoot().setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            Log.d(TAG, "position: " + Integer.toString(position));
+            if (position != RecyclerView.NO_POSITION) {
+                Tweet tweet = tweets.get(position);
+                Intent intent = new Intent(context, TweetDetailActivity.class);
+                intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation((Activity) context, (View)binding.ivProfileImage, "backdrop");
+                context.startActivity(intent, options.toBundle());
+            }
         }
     }
 }
