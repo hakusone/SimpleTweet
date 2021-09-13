@@ -1,18 +1,24 @@
 package com.codepath.apps.simpletweet;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.codepath.apps.simpletweet.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -30,12 +36,13 @@ public class TimelineActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeContainer;
     private EndlessRecyclerViewScrollListener scrollListener;
     private long oldestTweetId;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-
+        context = this;
         client = TwitterApp.getRestClient(this);
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -68,6 +75,19 @@ public class TimelineActivity extends AppCompatActivity {
         };
 
         rvTweets.addOnScrollListener(scrollListener);
+
+        ItemClickSupport.addTo(rvTweets).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+            @Override
+            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                Log.d(TAG, "position: " + Integer.toString(position));
+                if (position != RecyclerView.NO_POSITION) {
+                    Tweet tweet = tweets.get(position);
+                    Intent intent = new Intent(context, TweetDetailActivity.class);
+                    intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
+                    context.startActivity(intent);
+                }
+            }
+        });
 
 
         populateHomeTimeline();

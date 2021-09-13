@@ -76,27 +76,12 @@ public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder  {
         final ItemTweetBinding binding;
 
         public ViewHolder(ItemTweetBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            this.binding.getRoot().setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            Log.d(TAG, "position: " + Integer.toString(position));
-            if (position != RecyclerView.NO_POSITION) {
-                Tweet tweet = tweets.get(position);
-                Intent intent = new Intent(context, TweetDetailActivity.class);
-                intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
-                ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation((Activity) context, (View)binding.ivProfileImage, "backdrop");
-                context.startActivity(intent, options.toBundle());
-            }
         }
     }
 }
