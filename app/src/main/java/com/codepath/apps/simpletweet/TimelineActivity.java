@@ -28,6 +28,8 @@ public class TimelineActivity extends AppCompatActivity {
     List<Tweet> tweets;
     TweetsAdapter adapter;
     private SwipeRefreshLayout swipeContainer;
+    private EndlessRecyclerViewScrollListener scrollListener;
+    private long oldestTweetId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,19 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets = findViewById(R.id.rvTweets);
         tweets = new ArrayList<>();
         adapter = new TweetsAdapter(this, tweets);
-
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
         rvTweets.setAdapter(adapter);
+
+        scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                loadMoreData();
+            }
+        };
+
+        rvTweets.addOnScrollListener(scrollListener);
+
 
         populateHomeTimeline();
     }
@@ -69,7 +81,10 @@ public class TimelineActivity extends AppCompatActivity {
                 JSONArray jsonArray = json.jsonArray;
                 try {
                     adapter.clear();
-                    adapter.addAll(Tweet.fromJsonArray(jsonArray));
+                    List<Tweet> newTweets = Tweet.fromJsonArray(jsonArray);
+                    adapter.addAll(newTweets);
+                    Tweet oldestTweet = newTweets.get(newTweets.size() - 1); // get last tweet
+                    oldestTweetId = oldestTweet.getId();
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
                 } catch (JSONException e) {
@@ -82,5 +97,31 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure" + response, throwable);
             }
         });
+    }
+
+    public void loadMoreData() {
+        Log.i("TimelineActivity", "Loading more data...");
+        client.getNextPageOfTweets(new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Headers headers, JSON json) {
+                Log.i(TAG, "onSuccess" + json.toString());
+                JSONArray jsonArray = json.jsonArray;
+                try {
+                    List<Tweet> newTweets = Tweet.fromJsonArray(jsonArray);
+                    adapter.addAll(newTweets);
+                    Tweet oldestTweet = newTweets.get(newTweets.size() - 1); // get last tweet
+                    oldestTweetId = oldestTweet.getId();
+                    adapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
+                } catch (JSONException e) {
+                    Log.e(TAG, "json exception", e);
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                Log.e(TAG, "onFailure" + response, throwable);
+            }
+        }, oldestTweetId - 1);
     }
 }
