@@ -13,7 +13,7 @@ public class BindingAdapterUtils {
     public static void loadImage(ImageView view, String url) {
         Glide.with(view.getContext())
                 .load(url)
-                .transform(new CenterInside(), new RoundedCorners(5))
+                .transform(new CenterInside(), new RoundedCorners(10))
                 .into(view);
     }
 }

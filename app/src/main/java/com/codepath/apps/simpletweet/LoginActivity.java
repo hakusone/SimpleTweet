@@ -24,6 +24,9 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
+		getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_logo_white);
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		final SampleModel sampleModel = new SampleModel();
 		sampleModel.setName("CodePath");
 
