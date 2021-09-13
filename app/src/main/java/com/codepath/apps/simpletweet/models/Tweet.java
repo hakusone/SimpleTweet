@@ -1,5 +1,11 @@
 package com.codepath.apps.simpletweet.models;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+
 import com.codepath.apps.simpletweet.TimeFormatter;
 
 import org.json.JSONArray;
@@ -11,15 +17,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
+@Entity(foreignKeys = @ForeignKey(entity=User.class, parentColumns="id", childColumns="user_id"))
 public class Tweet {
+    @ColumnInfo
+    @PrimaryKey
     public long id;
+    @ColumnInfo
     public String body;
+    @ColumnInfo
     public String createdAt;
-    public User user;
+    @ColumnInfo
     public boolean retweeted;
+    @ColumnInfo
     public boolean favorited;
+    @ColumnInfo
     public Integer retweetCount;
+    @ColumnInfo
     public Integer favoriteCount;
+
+    @Embedded(prefix="user_")
+    public User user;
 
     public long getId() {
         return id;

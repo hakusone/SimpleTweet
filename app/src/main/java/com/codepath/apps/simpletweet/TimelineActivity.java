@@ -2,15 +2,15 @@ package com.codepath.apps.simpletweet;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,15 +18,18 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.simpletweet.models.Tweet;
+import com.codepath.apps.simpletweet.models.TweetDao;
+import com.codepath.apps.simpletweet.models.UserDao;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.parceler.Parcels;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import okhttp3.Headers;
 
@@ -41,6 +44,8 @@ public class TimelineActivity extends AppCompatActivity {
     private EndlessRecyclerViewScrollListener scrollListener;
     private long oldestTweetId;
     Context context;
+    TweetDao tweetDao;
+    UserDao userDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +139,7 @@ public class TimelineActivity extends AppCompatActivity {
                     adapter.addAll(newTweets);
                     Tweet oldestTweet = newTweets.get(newTweets.size() - 1); // get last tweet
                     oldestTweetId = oldestTweet.getId();
+                    updateDatabase(newTweets);
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
                 } catch (JSONException e) {
@@ -144,6 +150,8 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "onFailure" + response, throwable);
+                Toast.makeText(context, "No internet", Toast.LENGTH_SHORT).show();
+                getFromDatabase();
             }
         });
     }
@@ -160,6 +168,7 @@ public class TimelineActivity extends AppCompatActivity {
                     adapter.addAll(newTweets);
                     Tweet oldestTweet = newTweets.get(newTweets.size() - 1); // get last tweet
                     oldestTweetId = oldestTweet.getId();
+                    updateDatabase(newTweets);
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
                 } catch (JSONException e) {
@@ -170,7 +179,59 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
                 Log.e(TAG, "onFailure" + response, throwable);
+
+                Toast.makeText(context, "No internet", Toast.LENGTH_SHORT).show();
             }
         }, oldestTweetId - 1);
+    }
+
+    public void updateDatabase(List<Tweet> tweets) {
+        tweetDao = ((TwitterApp) getApplicationContext()).getMyDatabase().tweetDao();
+        userDao = ((TwitterApp) getApplicationContext()).getMyDatabase().userDao();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (Tweet tweetModel : tweets) {
+                    tweetDao.insertTweet(tweetModel);
+                    userDao.insertUser(tweetModel.user);
+                }
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //UI Thread work here
+                    }
+                });
+            }
+        });
+    }
+
+    public void getFromDatabase() {
+        tweetDao = ((TwitterApp) getApplicationContext()).getMyDatabase().tweetDao();
+        userDao = ((TwitterApp) getApplicationContext()).getMyDatabase().userDao();
+
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                List<Tweet> tweets = tweetDao.recentItems();
+
+                adapter.addAll(tweets);
+                adapter.notifyDataSetChanged();
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //UI Thread work here
+                    }
+                });
+            }
+        });
     }
 }

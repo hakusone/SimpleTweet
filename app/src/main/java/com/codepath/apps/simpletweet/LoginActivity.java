@@ -23,28 +23,6 @@ public class LoginActivity extends OAuthLoginActionBarActivity<TwitterClient> {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
-
-		final SampleModel sampleModel = new SampleModel();
-		sampleModel.setName("CodePath");
-
-		sampleModelDao = ((TwitterApp) getApplicationContext()).getMyDatabase().sampleModelDao();
-
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Handler handler = new Handler(Looper.getMainLooper());
-
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				sampleModelDao.insertModel(sampleModel);
-
-				handler.post(new Runnable() {
-					@Override
-					public void run() {
-						//UI Thread work here
-					}
-				});
-			}
-		});
 	}
 
 
