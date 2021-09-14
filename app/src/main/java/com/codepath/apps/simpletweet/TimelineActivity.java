@@ -116,6 +116,10 @@ public class TimelineActivity extends AppCompatActivity {
                 return true;
             case R.id.miCompose:
                 Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(this, ComposeActivity.class);
+                startActivity(intent);
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
