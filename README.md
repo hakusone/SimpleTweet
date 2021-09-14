@@ -41,6 +41,12 @@ Swipe refresh + Infinite Scroll + Media Link
 
 <img src='walkthrough_infinite_scroll.gif' title='Video Walkthrough Infinite Scroll' width='' alt='Video Walkthrough Infinite Scroll' />
 
+
+Collapsing Toolbar
+
+<img src='walkthrough_collapsing_toolbar.gif' title='Video Walkthrough Infinite Scroll' width='' alt='Video Walkthrough Infinite Scroll' />
+
+
 GIF created with [Kap](https://getkap.co/).
 
 ## Notes
