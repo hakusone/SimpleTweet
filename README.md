@@ -34,9 +34,11 @@ The following **additional** features are implemented:
 Here's a walkthrough of implemented user stories:
 
 Login + Infinite Scroll + Media Link
+
 <img src='walkthrough_login.gif' title='Video Walkthrough Click Link' width='' alt='Video Walkthrough Click Link' />
 
 Swipe refresh + Infinite Scroll + Media Link
+
 <img src='walkthrough_infinite_scroll.gif' title='Video Walkthrough Infinite Scroll' width='' alt='Video Walkthrough Infinite Scroll' />
 
 GIF created with [Kap](https://getkap.co/).
