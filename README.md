@@ -2,7 +2,7 @@
 
 **SimpleTweet** is an android app that allows a user to view their Twitter timeline. The app utilizes [Twitter REST API](https://dev.twitter.com/rest/public).
 
-Time spent: **X** hours spent in total
+Time spent: 10 hours spent in total
 
 ## User Stories
 
@@ -27,19 +27,26 @@ The following **optional** features are implemented:
 
 The following **additional** features are implemented:
 
-- [ ] List anything else that you can get done to improve the app functionality!
+- [x] User can view how many likes and retweets a tweet has
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='walkthrough_click_link.gif' title='Video Walkthrough Click Link' width='' alt='Video Walkthrough Click Link' />
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+<img src='walkthrough_swipe_infinite_scroll.gif' title='Video Walkthrough Infinite Scroll' width='' alt='Video Walkthrough Infinite Scroll' />
+
+
+GIF created with [Kap](https://getkap.co/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+I tried to implement persistence with the database (my attempts are on a different branch), but I did not have the time to work on it. I ran into issues with embedding an object in another object (User in a Tweet) and none of what I tried work, and I ran out of time to debug.
+
+I attempted to implement the collapsing Toolbar, but it doesn't appear to work...? I can't test it now because of rate limits, but if it does work, I'll update the readme + walkthrough gifs.
+
+I spent a lot of time trying to figure out how to add the xml icons into the project. I got it done eventually!
 
 ## Open-source libraries used
 

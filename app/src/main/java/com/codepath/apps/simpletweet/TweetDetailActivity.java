@@ -1,6 +1,7 @@
 package com.codepath.apps.simpletweet;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
@@ -22,8 +23,10 @@ public class TweetDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tweet_detail);
 
-        getSupportActionBar().setTitle("Tweet");
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
+        getSupportActionBar().setTitle("Tweet");
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tweet_detail);
         tweet = (Tweet) Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
