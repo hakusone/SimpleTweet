@@ -7,8 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
     <!-- AppBarLayout is a wrapper for a Toolbar in order to apply scrolling effects. -->
     <!-- Note that AppBarLayout expects to be the first child nested within a CoordinatorLayout -->
@@ -23,7 +22,7 @@
             layout="@layout/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways"/>
+            app:layout_scrollFlags="scroll|enterAlways" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -44,7 +43,21 @@
             android:layout_alignParentTop="true"
             android:layout_marginStart="0dp"
             android:layout_marginTop="0dp" />
-
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCompose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/twitter_blue"
+        android:contentDescription="@string/compose_new_tweet"
+        android:src="@drawable/vector_compose_fab"
+        app:fabSize="normal"
+        app:layout_anchor="@id/swipeContainer"
+        app:layout_anchorGravity="bottom|end"
+        app:layout_behavior="com.codepath.apps.simpletweet.ScrollAwareFABBehavior"
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

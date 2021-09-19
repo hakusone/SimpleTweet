@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.codepath.apps.simpletweet.models.Tweet;
 import com.codepath.apps.simpletweet.models.User;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,6 +105,13 @@ public class TimelineActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton fab = findViewById(R.id.fabCompose);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startComposeActivity();
+            }
+        });
 
         populateHomeTimeline();
     }
@@ -118,18 +127,21 @@ public class TimelineActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.miCompose:
-                Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(this, ComposeActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
+//                Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
+                startComposeActivity();
 
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void startComposeActivity() {
+        Intent intent = new Intent(this, ComposeActivity.class);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override

@@ -5,7 +5,7 @@
         android:id="@+id/miCompose"
         android:icon="@drawable/vector_compose_fab"
         android:iconTintMode="src_in"
-        android:title="Compose"
+        android:title="@string/compose_tweet"
         app:showAsAction="ifRoom"
         app:tint="@color/white" />
 </menu>

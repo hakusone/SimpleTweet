@@ -27,7 +27,9 @@
         android:gravity="start|top"
         android:hint="@string/compose"
         android:inputType="textMultiLine"
-        android:minHeight="150dp" />
+        android:minHeight="150dp"
+        android:textColorHighlight="@color/twitter_blue_30"
+        android:textColorLink="@color/twitter_blue_fill_pressed" />
 
     <Button
         android:id="@+id/btnTweet"

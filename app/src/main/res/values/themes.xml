@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.TwitterAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/twitter_blue</item>
+        <item name="colorPrimaryVariant">@color/twitter_blue_50</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/twitter_blue_fill_pressed</item>
+        <item name="colorSecondaryVariant">@color/twitter_blue_30</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="colorControlNormal">@color/twitter_blue</item>
+        <item name="colorControlActivated">@color/twitter_blue_fill_pressed</item>
+        <item name="colorControlHighlight">@color/twitter_blue_30</item>
+    </style>
+</resources>
