@@ -25,6 +25,10 @@ public class Tweet {
         return id;
     }
 
+    public Tweet() {
+
+    }
+
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
         tweet.id = jsonObject.getLong("id");

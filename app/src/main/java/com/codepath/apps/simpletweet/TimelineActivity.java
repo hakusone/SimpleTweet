@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.simpletweet.models.Tweet;
+import com.codepath.apps.simpletweet.models.User;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -28,10 +29,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import okhttp3.Headers;
 
 public class TimelineActivity extends AppCompatActivity {
     public static final String TAG = "TimelineActivity";
+    private final int REQUEST_CODE = 20;
 
     TwitterClient client;
     RecyclerView rvTweets;
@@ -118,12 +122,28 @@ public class TimelineActivity extends AppCompatActivity {
                 Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(this, ComposeActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE);
 
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            // get data from the intent (Tweet object)
+            Tweet newTweet = (Tweet) Parcels.unwrap(data.getParcelableExtra("tweet"));
+            // update RecyclerView with the new tweet
+            // modify data source of tweets
+            // update adapter
+            tweets.add(0, newTweet);
+            adapter.notifyItemInserted(0);
+            // scroll smoothly to newly inserted item
+            rvTweets.smoothScrollToPosition(0);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void populateHomeTimeline() {
