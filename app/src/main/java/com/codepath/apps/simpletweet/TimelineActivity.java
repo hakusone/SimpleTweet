@@ -10,6 +10,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -147,6 +149,12 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void populateHomeTimeline() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(TimelineActivity.this, "No network connection available", Toast.LENGTH_LONG).show();
+            swipeContainer.setRefreshing(false);
+            return;
+        }
+
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
@@ -173,6 +181,12 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     public void loadMoreData() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(TimelineActivity.this, "No network connection available", Toast.LENGTH_LONG).show();
+            swipeContainer.setRefreshing(false);
+            return;
+        }
+
         Log.i("TimelineActivity", "Loading more data...");
         client.getNextPageOfTweets(new JsonHttpResponseHandler() {
             @Override
@@ -196,5 +210,12 @@ public class TimelineActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure" + response, throwable);
             }
         }, oldestTweetId - 1);
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }
