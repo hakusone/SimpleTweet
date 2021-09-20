@@ -14,6 +14,23 @@
         <item name="actionBarTabTextStyle">@style/MyActionBarTabText</item>
     </style>
 
+    <!-- Define your custom dialog theme here extending from base -->
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <!-- Define color properties as desired -->
+        <item name="colorPrimary">@color/twitter_blue</item>
+        <item name="colorPrimaryDark">#000</item>
+        <item name="android:textColorHighlight">@color/twitter_blue_30</item>
+        <item name="colorAccent">@color/twitter_blue_fill_pressed</item>
+        <item name="colorControlNormal">@color/twitter_blue</item>
+        <!-- Define window properties as desired -->
+        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowTitleStyle">@style/DialogWindowTitle</item>
+    </style>
+
     <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:background">@color/twitter_blue</item>
         <item name="android:titleTextStyle">@style/MyActionBar.TitleTextStyle</item>
@@ -30,6 +47,16 @@
 
     <style name="MyActionBarTabText" parent="@style/Widget.AppCompat.ActionBar.TabText">
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DialogWindowTitle" parent="Base.DialogWindowTitle.AppCompat">
+        <item name="android:background">@color/twitter_blue</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@style/DialogWindowTitleText</item>
+    </style>
+
+    <style name="DialogWindowTitleText" parent="@android:style/TextAppearance.DialogWindowTitle">
+        <item name="android:textSize">24sp</item>
     </style>
 
 </resources>

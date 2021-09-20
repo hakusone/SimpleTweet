@@ -2,32 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ComposeActivity">
-
-    <include
-        layout="@layout/toolbar_main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/toolbar"
-        app:layout_scrollFlags="scroll|enterAlways" />
+    style="@style/AppDialogTheme"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".ComposeDialogFragment">
 
     <EditText
         android:id="@+id/etCompose"
+        style="@style/Widget.AppCompat.EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/btnTweet"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@null"
         android:ems="10"
         android:gravity="start|top"
         android:hint="@string/compose"
         android:inputType="textMultiLine"
-        android:minHeight="150dp"
+        android:minHeight="100dp"
         android:textColorHighlight="@color/twitter_blue_30"
         android:textColorLink="@color/twitter_blue_fill_pressed" />
 
@@ -35,20 +31,63 @@
         android:id="@+id/btnTweet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etCompose"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:text="@string/tweet" />
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@color/twitter_blue"
+        android:text="@string/tweet"
+        android:textColor="@color/white" />
 
     <TextView
         android:id="@+id/tvCounter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/etCompose"
+        android:layout_alignBottom="@+id/btnTweet"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toStartOf="@+id/btnTweet"
+        android:textColor="@color/light_gray"
+        tools:text="0/280" />
+
+    <TextView
+        android:id="@+id/tvReplyTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivReply"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toEndOf="@+id/ivReply"
+        android:textStyle="bold"
+        tools:text="Reply to" />
+
+    <ImageView
+        android:id="@+id/ivReply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnClose"
+        android:layout_alignBottom="@+id/btnClose"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toEndOf="@+id/btnClose"
+        app:srcCompat="@drawable/ic_baseline_subdirectory_arrow_right_24"
+        app:tint="@drawable/selector_twitter_retweet_color"
+        tools:layout_height="24dp" />
+
+    <ImageButton
+        android:id="@+id/btnClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btnTweet"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="5dp"
-        android:text="0/140"
-        android:textColor="@color/light_gray" />
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="10dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_vector_close"
+        app:tint="@color/twitter_blue" />
+
 </RelativeLayout>
