@@ -23,26 +23,42 @@ The following **optional** features are implemented:
 - [x] The "Compose" action is moved to a FloatingActionButton instead of on the AppBar
 - [x] Compose tweet functionality is build using modal overlay
 - [x] Use Parcelable instead of Serializable using the popular [Parceler library](http://guides.codepath.org/android/Using-Parceler).
-- [ ] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
+- [x] User can **open the twitter app offline and see last loaded tweets**. Persisted in SQLite tweets are refreshed on every application launch. While "live data" is displayed when app can get it from Twitter API, it is also saved for use in offline mode.
 - [ ] When a user leaves the compose view without publishing and there is existing text, prompt to save or delete the draft. If saved, the draft should then be **persisted to disk** and can later be resumed from the compose view.
 - [ ] Enable your app to receive implicit intents from other apps. When a link is shared from a web browser, it should pre-fill the text and title of the web page when composing a tweet.
 
 The following **additional** features are implemented:
 
-- [x] Added handling to report to the user when no network connection is available
+- [x] Added handling for when no network connection, skipping any api requests for get or compose, and reporting to the user that network connection is unavailable
 - [x] Compose modal opens up when clicking on the reply feature on the RecyclerView's Tweet Item View
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+Basic Functionality (Compose Tweet & Add to RecyclerView, Modal View, Reply from RecyclerView Item and Detail View)
 
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
+<img src='walkthrough_twitter_2_basic.gif' title='Walkthrough of Basic Functionality' width='' alt='Walkthrough of Basic Functionality' />
+
+Additional Functionality (Data Persistence, Network Connectivity Detection, Parcelable)
+
+<img src='walkthrough_twitter_2_no_connection.gif' title='Walkthrough of Additional Functionality' width='' alt='Walkthrough of Additional Functionality' />
+
+GIF created with [Kap](https://getkap.co/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Converting the ComposeActivity to a Modal was easy, but sizing the view was surprisingly hard. I wish there was an easy way to set the size of the modal without having to tinker directly with the styles as well as the java code.
+
+The interactions between all of the views were pretty messy, especially when it came to hooking up all the actions that could activate the Compose Tweet Modal. The Reply to Tweet action is just a modified version of the Compose New Tweet action, so in total you can open the Compose Tweet modal via: the compose button on the Toolbar, the compose FAB on the Timeline view, the reply button on the RecyclerView's item view, and the reply button on the Tweet Detail View. By far, the hardest to figure out was how to propagate the reply event from TweetDetailActivity to Compose Modal and then the result from the Compose Modal to the TimelineActivity to update a new tweet. I ended up initializing the TweetDetailActivity with startActivityForResult, so I could make the TweetDetailActivity call the Compose Modal directly (instead of reusing the setup in TimelineActivity), listen for a ComposeTweetFinished event, and then send the results of that event back to the TimelineActivity via intent result data. It's really weird, but it works.
+
+I also wish I could send more information to the ComposeTweetFragment, but I'm not sure if it takes Parcelable models, since the arguments it takes is only strings.
+
+Data persistence gave me some trouble last week, but this week, I followed the video guide almost exactly, and it went ok.
+
+The network connectivity check implementation is a little janky, but works for the most part. Occasionally, pulling down to refresh tweets after switching from connected to airplane mode will cause the app to restart and load db tweets, but I couldn't find any associated error messages and it seems to... work fine after doing it once? (It might just be RecyclerView remaking the views for "new" tweets.) Another bug that doesn't throw any errors is that attempting to endless scroll after switching from airplane mode to connected doesn't trigger the event for endless scroll, thus never attempting to load more data. This behavior probably breaks the EndlessScrollListener item loading & paging system.
+
+
 
 ## Open-source libraries used
 

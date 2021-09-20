@@ -197,10 +197,36 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
                 List<TweetWithUser> tweetWithUsers = tweetDao.recentItems();
                 List<Tweet> tweetsFromDB = TweetWithUser.getTweetList(tweetWithUsers);
 
+                Tweet oldestTweet = tweetsFromDB.get(tweetsFromDB.size() - 1); // get last tweet
+                oldestTweetId = oldestTweet.getId();
+
                 adapter.clear();
                 adapter.addAll(tweetsFromDB);
-                adapter.notifyDataSetChanged();
-                swipeContainer.setRefreshing(false);
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //UI Thread work here
+                    }
+                });
+            }
+        });
+    }
+
+    private void addTweetsToDB(List<Tweet> tweetsFromNetwork) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Saving data into database");
+                // insert users first
+                List<User> usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork);
+                tweetDao.insertModel(usersFromNetwork.toArray(new User[0]));
+
+                // then tweets
+                tweetDao.insertModel(tweetsFromNetwork.toArray(new Tweet[0]));
 
                 handler.post(new Runnable() {
                     @Override
@@ -216,6 +242,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
         if (!isNetworkAvailable()) {
             Toast.makeText(TimelineActivity.this, "No network connection available", Toast.LENGTH_LONG).show();
             getTweetsFromDB();
+            swipeContainer.setRefreshing(false);
             return;
         }
 
@@ -232,30 +259,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
                     oldestTweetId = oldestTweet.getId();
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
-
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
-                    Handler handler = new Handler(Looper.getMainLooper());
-
-                    executor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.i(TAG, "Saving data into database");
-                            // insert users first
-                            List<User> usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork);
-                            tweetDao.insertModel(usersFromNetwork.toArray(new User[0]));
-
-                            // then tweets
-                            tweetDao.insertModel(tweetsFromNetwork.toArray(new Tweet[0]));
-
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //UI Thread work here
-                                }
-                            });
-                        }
-                    });
-
+                    addTweetsToDB(tweetsFromNetwork);
                 } catch (JSONException e) {
                     Log.e(TAG, "json exception", e);
                 }
@@ -271,7 +275,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
     public void loadMoreData() {
         if (!isNetworkAvailable()) {
             Toast.makeText(TimelineActivity.this, "No network connection available", Toast.LENGTH_LONG).show();
-            swipeContainer.setRefreshing(false);
             return;
         }
 
@@ -287,7 +290,8 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
                     Tweet oldestTweet = newTweets.get(newTweets.size() - 1); // get last tweet
                     oldestTweetId = oldestTweet.getId();
                     adapter.notifyDataSetChanged();
-                    swipeContainer.setRefreshing(false);
+
+                    addTweetsToDB(newTweets);
                 } catch (JSONException e) {
                     Log.e(TAG, "json exception", e);
                 }
