@@ -4,6 +4,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -142,10 +145,10 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
             return;
         }
 
-//        if (!getActivity().isNetworkAvailable()) {
-//            Toast.makeText(getActivity(), "No network connection available", Toast.LENGTH_LONG).show();
-//            return;
-//        }
+        if (!isNetworkAvailable()) {
+            Toast.makeText(getActivity(), "No network connection available", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         // make API call to twitter API to publish tweet
         client.publishTweet(tweetContent, tweetId, new JsonHttpResponseHandler() {
@@ -182,4 +185,12 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
         params.height = ViewGroup.LayoutParams.MATCH_PARENT;
         getDialog().getWindow().setAttributes((android.view.WindowManager.LayoutParams) params);
     }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
 }
