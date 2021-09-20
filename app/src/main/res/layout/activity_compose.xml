@@ -5,6 +5,7 @@
     style="@style/AppDialogTheme"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:windowSoftInputMode="adjustResize"
     tools:context=".ComposeDialogFragment">
 
     <EditText
@@ -55,11 +56,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ivReply"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="3dp"
         android:layout_marginEnd="15dp"
         android:layout_toEndOf="@+id/ivReply"
-        android:textStyle="bold"
         tools:text="Reply to" />
 
     <ImageView

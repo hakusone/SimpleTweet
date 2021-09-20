@@ -85,7 +85,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginStart="100dp"
                 android:layout_marginBottom="0dp"
-                android:layout_toEndOf="@+id/ivReply"
+                android:layout_toEndOf="@+id/ibReply"
                 android:background="@android:color/transparent"
                 app:srcCompat="@drawable/selector_twitter_retweet"
                 app:tint="@drawable/selector_twitter_retweet_color"
@@ -110,7 +110,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginStart="5dp"
                 android:layout_marginBottom="7dp"
-                android:layout_toEndOf="@+id/ivReply"
+                android:layout_toEndOf="@+id/ibReply"
                 app:tint="@drawable/selector_twitter_retweet_color"
                 tools:text="1" />
 
@@ -139,8 +139,8 @@
                 app:tint="@drawable/selector_twitter_favorite_color"
                 tools:text="30" />
 
-            <ImageView
-                android:id="@+id/ivReply"
+            <ImageButton
+                android:id="@+id/ibReply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvBody"
@@ -149,6 +149,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="0dp"
                 android:layout_toEndOf="@+id/ivProfileImage"
+                android:background="@android:color/transparent"
                 app:srcCompat="@drawable/ic_baseline_reply_24"
                 app:tint="@drawable/selector_twitter_retweet_color"
                 tools:layout_height="24dp" />

@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
 
 import okhttp3.Headers;
 
-public class TimelineActivity extends AppCompatActivity implements ComposeDialogFragment.ComposeTweetDialogListener {
+public class TimelineActivity extends AppCompatActivity implements ComposeDialogFragment.ComposeTweetDialogListener, TweetsAdapter.AdapterListener {
     public static final String TAG = "TimelineActivity";
     private final int REQUEST_CODE = 20;
 
@@ -96,7 +96,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
                     Tweet tweet = tweets.get(position);
                     Intent intent = new Intent(context, TweetDetailActivity.class);
                     intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
-                    context.startActivity(intent);
+                    startActivityForResult(intent, REQUEST_CODE);
                 }
             }
         });
@@ -105,7 +105,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showComposeDialog("");
+                showComposeDialog();
             }
         });
 
@@ -127,7 +127,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
                 return true;
             case R.id.miCompose:
 //                Toast.makeText(this, "Compose", Toast.LENGTH_SHORT).show();
-                showComposeDialog("");
+                showComposeDialog();
 
                 return true;
             default:
@@ -135,31 +135,30 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
         }
     }
 
-//    private void startComposeActivity() {
-//        Intent intent = new Intent(this, ComposeDialogFragment.class);
-//        startActivityForResult(intent, REQUEST_CODE);
-//    }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-//            // get data from the intent (Tweet object)
-//            Tweet newTweet = (Tweet) Parcels.unwrap(data.getParcelableExtra("tweet"));
-//            // update RecyclerView with the new tweet
-//            // modify data source of tweets
-//            // update adapter
-//            tweets.add(0, newTweet);
-//            adapter.notifyItemInserted(0);
-//            // scroll smoothly to newly inserted item
-//            rvTweets.smoothScrollToPosition(0);
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            // get data from the intent (Tweet object)
+            Tweet newTweet = (Tweet) Parcels.unwrap(data.getParcelableExtra("tweet"));
+            // update RecyclerView with the new tweet
+            // modify data source of tweets
+            // update adapter
+            tweets.add(0, newTweet);
+            adapter.notifyItemInserted(0);
+            // scroll smoothly to newly inserted item
+            rvTweets.smoothScrollToPosition(0);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
-    private void showComposeDialog(String replyTo) {
+    private void showReplyDialog(String replyTo, String tweetId) {
         FragmentManager fm = getSupportFragmentManager();
-        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(replyTo);
+        ComposeDialogFragment composeDialogFragment = ComposeDialogFragment.newInstance(replyTo, tweetId);
         composeDialogFragment.show(fm, "activity_compose");
+    }
+
+    private void showComposeDialog() {
+        showReplyDialog("", "");
     }
 
     public void onFinishComposeTweetDialog(Tweet tweet) {
@@ -167,6 +166,14 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
         adapter.notifyItemInserted(0);
         // scroll smoothly to newly inserted item
         rvTweets.smoothScrollToPosition(0);
+    }
+
+    @Override
+    public void onReplyClick(int position) {
+        if (position != RecyclerView.NO_POSITION) {
+            Tweet tweet = tweets.get(position);
+            showReplyDialog(tweet.user.screenName, String.valueOf(tweet.getId()));
+        }
     }
 
     private void populateHomeTimeline() {

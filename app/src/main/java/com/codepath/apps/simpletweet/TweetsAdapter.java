@@ -3,10 +3,13 @@ package com.codepath.apps.simpletweet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Movie;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
@@ -24,6 +27,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     Context context;
     List<Tweet> tweets;
+
+    public interface AdapterListener {
+        void onReplyClick(int position);
+    }
 
     public TweetsAdapter(Context context, List<Tweet> tweets) {
         this.context = context;
@@ -76,12 +83,23 @@ public class TweetsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder  {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         final ItemTweetBinding binding;
+        ImageButton ibReply;
 
         public ViewHolder(ItemTweetBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+
+            ibReply = (ImageButton) itemView.findViewById(R.id.ibReply);
+
+            ibReply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AdapterListener listener = (AdapterListener) context;
+                    listener.onReplyClick(getBindingAdapterPosition());
+                }
+            });
         }
     }
 }

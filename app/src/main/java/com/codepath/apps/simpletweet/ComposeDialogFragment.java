@@ -38,6 +38,7 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
     TwitterClient client;
     ImageView ivReply;
     ImageButton btnClose;
+    String tweetId;
 
     public interface ComposeTweetDialogListener {
         void onFinishComposeTweetDialog(Tweet tweet);
@@ -47,10 +48,11 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
 
     }
 
-    public static ComposeDialogFragment newInstance(String replyTo) {
+    public static ComposeDialogFragment newInstance(String replyTo, String tweetId) {
         ComposeDialogFragment fragment = new ComposeDialogFragment();
         Bundle args = new Bundle();
         args.putString("replyTo", replyTo);
+        args.putString("tweetId", tweetId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,6 +67,7 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
         super.onViewCreated(view, savedInstanceState);
 
         String replyTo = getArguments().getString("replyTo", "");
+        tweetId = getArguments().getString("tweetId", "");
 
         etCompose = view.findViewById(R.id.etCompose);
         btnTweet = view.findViewById(R.id.btnTweet);
@@ -74,7 +77,9 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
         btnClose = view.findViewById(R.id.btnClose);
 
         if (!replyTo.equals("")) {
+            replyTo = "@" + replyTo;
             tvReplyTo.setText(replyTo);
+            etCompose.setText(replyTo);
         }
         else {
             tvReplyTo.setVisibility(View.INVISIBLE);
@@ -143,7 +148,7 @@ public class ComposeDialogFragment extends DialogFragment implements View.OnClic
 //        }
 
         // make API call to twitter API to publish tweet
-        client.publishTweet(tweetContent, new JsonHttpResponseHandler() {
+        client.publishTweet(tweetContent, tweetId, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Headers headers, JSON json) {
                 Log.i(TAG, "onSuccess to publish tweet");
