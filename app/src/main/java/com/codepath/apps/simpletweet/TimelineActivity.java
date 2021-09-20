@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +21,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.apps.simpletweet.models.Tweet;
+import com.codepath.apps.simpletweet.models.TweetDao;
+import com.codepath.apps.simpletweet.models.TweetWithUser;
+import com.codepath.apps.simpletweet.models.User;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -28,6 +33,8 @@ import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Nullable;
 
@@ -45,6 +52,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
     private EndlessRecyclerViewScrollListener scrollListener;
     private long oldestTweetId;
     Context context;
+    TweetDao tweetDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +64,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
 
         context = this;
         client = TwitterApp.getRestClient(this);
+
+        tweetDao = ((TwitterApp) getApplicationContext()).getMyDatabase().tweetDao();
+
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
 
@@ -176,10 +187,35 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
         }
     }
 
+    private void getTweetsFromDB() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Handler handler = new Handler(Looper.getMainLooper());
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Log.i(TAG, "Pulling data from database");
+                List<TweetWithUser> tweetWithUsers = tweetDao.recentItems();
+                List<Tweet> tweetsFromDB = TweetWithUser.getTweetList(tweetWithUsers);
+
+                adapter.clear();
+                adapter.addAll(tweetsFromDB);
+                adapter.notifyDataSetChanged();
+                swipeContainer.setRefreshing(false);
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //UI Thread work here
+                    }
+                });
+            }
+        });
+    }
+
     private void populateHomeTimeline() {
         if (!isNetworkAvailable()) {
             Toast.makeText(TimelineActivity.this, "No network connection available", Toast.LENGTH_LONG).show();
-            swipeContainer.setRefreshing(false);
+            getTweetsFromDB();
             return;
         }
 
@@ -190,12 +226,36 @@ public class TimelineActivity extends AppCompatActivity implements ComposeDialog
                 JSONArray jsonArray = json.jsonArray;
                 try {
                     adapter.clear();
-                    List<Tweet> newTweets = Tweet.fromJsonArray(jsonArray);
-                    adapter.addAll(newTweets);
-                    Tweet oldestTweet = newTweets.get(newTweets.size() - 1); // get last tweet
+                    List<Tweet> tweetsFromNetwork = Tweet.fromJsonArray(jsonArray);
+                    adapter.addAll(tweetsFromNetwork);
+                    Tweet oldestTweet = tweetsFromNetwork.get(tweetsFromNetwork.size() - 1); // get last tweet
                     oldestTweetId = oldestTweet.getId();
                     adapter.notifyDataSetChanged();
                     swipeContainer.setRefreshing(false);
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Handler handler = new Handler(Looper.getMainLooper());
+
+                    executor.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.i(TAG, "Saving data into database");
+                            // insert users first
+                            List<User> usersFromNetwork = User.fromJsonTweetArray(tweetsFromNetwork);
+                            tweetDao.insertModel(usersFromNetwork.toArray(new User[0]));
+
+                            // then tweets
+                            tweetDao.insertModel(tweetsFromNetwork.toArray(new Tweet[0]));
+
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //UI Thread work here
+                                }
+                            });
+                        }
+                    });
+
                 } catch (JSONException e) {
                     Log.e(TAG, "json exception", e);
                 }

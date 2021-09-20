@@ -1,5 +1,11 @@
 package com.codepath.apps.simpletweet.models;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 import com.codepath.apps.simpletweet.TimeFormatter;
 
 import org.json.JSONArray;
@@ -11,15 +17,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Parcel
+@Entity(foreignKeys = @ForeignKey(entity=User.class, parentColumns="id", childColumns="userId"))
 public class Tweet {
+    @ColumnInfo
+    @PrimaryKey
     public long id;
+
+    @ColumnInfo
     public String body;
+
+    @ColumnInfo
     public String createdAt;
-    public User user;
+
+    @ColumnInfo
     public boolean retweeted;
+
+    @ColumnInfo
     public boolean favorited;
+
+    @ColumnInfo
     public Integer retweetCount;
+
+    @ColumnInfo
     public Integer favoriteCount;
+
+    @ColumnInfo
+    public long userId;
+
+    @Ignore
+    public User user;
 
     public long getId() {
         return id;
@@ -34,11 +60,13 @@ public class Tweet {
         tweet.id = jsonObject.getLong("id");
         tweet.body = jsonObject.getString("text");
         tweet.createdAt = jsonObject.getString("created_at");
-        tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.retweeted = jsonObject.getBoolean("retweeted");
         tweet.retweetCount = jsonObject.getInt("retweet_count");
         tweet.favorited = jsonObject.getBoolean("favorited");
         tweet.favoriteCount = jsonObject.getInt("favorite_count");
+        User user = User.fromJson(jsonObject.getJSONObject("user"));
+        tweet.user = user;
+        tweet.userId = user.id;
 
         return tweet;
     }
@@ -53,6 +81,13 @@ public class Tweet {
     }
 
     public String getFormattedTimeDifference() {
-        return TimeFormatter.getTimeDifference(this.createdAt);
+        if (this.createdAt != null) {
+            return TimeFormatter.getTimeDifference(this.createdAt);
+        }
+        return null;
+    }
+
+    public String toString() {
+        return String.valueOf(this.id) + ": " + this.body + "(" + this.userId + ")";
     }
 }
