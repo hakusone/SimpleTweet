@@ -49,7 +49,7 @@ GIF created with [Kap](https://getkap.co/).
 
 ## Notes
 
-Notes from original: [Part 2 Notes](#Part_2_Notes).
+Notes from original: [Part 2 Notes](#part-2-notes).
 
 ## Open-source libraries used
 
